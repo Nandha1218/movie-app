@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FaStar, FaPlay, FaCalendar } from 'react-icons/fa';
 import tmdbService, { getPosterUrl } from '../services/tmdb';
 import MovieCard from './MovieCard';
+import { initScrollAnimations } from '../utils/animations';
 import './Home.css';
 
 const Home = () => {
@@ -40,10 +41,23 @@ const Home = () => {
     fetchMovies();
   }, []);
 
+  useEffect(() => {
+    // Initialize scroll animations after component mounts
+    if (!loading && !error) {
+      const timer = setTimeout(() => {
+        initScrollAnimations();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, error]);
+
   if (loading) {
     return (
       <div className="container">
-        <div className="loading">Loading amazing movies...</div>
+        <div className="loading">
+          <div className="loading-reel"></div>
+          <p>Loading amazing movies...</p>
+        </div>
       </div>
     );
   }
@@ -101,42 +115,48 @@ const Home = () => {
             </h2>
             <Link to="/trending" className="view-all-btn">View All</Link>
           </div>
-          <div className="movies-grid">
-            {trendingMovies.slice(1, 9).map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
-            ))}
-          </div>
-        </section>
+                     <div className="movies-grid">
+             {trendingMovies.slice(1, 9).map((movie) => (
+               <div key={movie.id} className="fade-in-on-scroll">
+                 <MovieCard movie={movie} />
+               </div>
+             ))}
+           </div>
+         </section>
 
-        {/* Top Rated Movies */}
-        <section className="movies-section">
-          <div className="section-header">
-            <h2 className="section-title">
-              <FaStar /> Top Rated Movies
-            </h2>
-            <Link to="/top-rated" className="view-all-btn">View All</Link>
-          </div>
-          <div className="movies-grid">
-            {topRatedMovies.slice(0, 8).map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
-            ))}
-          </div>
-        </section>
+         {/* Top Rated Movies */}
+         <section className="movies-section fade-in-on-scroll">
+           <div className="section-header">
+             <h2 className="section-title">
+               <FaStar /> Top Rated Movies
+             </h2>
+             <Link to="/top-rated" className="view-all-btn btn-secondary">View All</Link>
+           </div>
+           <div className="movies-grid">
+             {topRatedMovies.slice(0, 8).map((movie) => (
+               <div key={movie.id} className="fade-in-on-scroll">
+                 <MovieCard movie={movie} />
+               </div>
+             ))}
+           </div>
+         </section>
 
-        {/* Upcoming Movies */}
-        <section className="movies-section">
-          <div className="section-header">
-            <h2 className="section-title">
-              <FaCalendar /> Coming Soon
-            </h2>
-            <Link to="/upcoming" className="view-all-btn">View All</Link>
-          </div>
-          <div className="movies-grid">
-            {upcomingMovies.slice(0, 8).map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
-            ))}
-          </div>
-        </section>
+         {/* Upcoming Movies */}
+         <section className="movies-section fade-in-on-scroll">
+           <div className="section-header">
+             <h2 className="section-title">
+               <FaCalendar /> Coming Soon
+             </h2>
+             <Link to="/upcoming" className="view-all-btn btn-secondary">View All</Link>
+           </div>
+           <div className="movies-grid">
+             {upcomingMovies.slice(0, 8).map((movie) => (
+               <div key={movie.id} className="fade-in-on-scroll">
+                 <MovieCard movie={movie} />
+               </div>
+             ))}
+           </div>
+         </section>
       </div>
     </div>
   );

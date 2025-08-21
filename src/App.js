@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './components/Home';
 import MovieDetail from './components/MovieDetail';
 import SearchResults from './components/SearchResults';
+import { initializeAnimations } from './utils/animations';
 import './App.css';
 
 function App() {
+  useEffect(() => {
+    // Initialize all animations and effects when the app mounts
+    initializeAnimations();
+  }, []);
+
   return (
     <Router>
       <div className="App">
