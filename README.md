@@ -1,6 +1,6 @@
 # Movie Search App 🎬
 
-A modern, responsive movie search application that fetches data from the TMDB API to display trending movies, ratings, and comprehensive movie details.
+A modern, responsive movie search application called Cine Search that fetches data from the TMDB API to display trending movies, ratings, and comprehensive movie details.
 
 ## ✨ Features
 

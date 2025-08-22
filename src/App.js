@@ -4,6 +4,8 @@ import Header from './components/Header';
 import Home from './components/Home';
 import MovieDetail from './components/MovieDetail';
 import SearchResults from './components/SearchResults';
+import MovieList from './components/MovieList';
+import Discover from './components/Discover';
 import { initializeAnimations } from './utils/animations';
 import './App.css';
 
@@ -22,6 +24,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/search" element={<SearchResults />} />
+            <Route path="/discover" element={<Discover />} />
+            <Route path="/:category" element={<MovieList />} />
           </Routes>
         </main>
       </div>

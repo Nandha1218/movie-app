@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaSearch, FaHome, FaStar, FaCalendar, FaPlay } from 'react-icons/fa';
+import { FaSearch, FaHome, FaStar, FaCalendar, FaPlay, FaTrophy, FaGlobe } from 'react-icons/fa';
 import './Header.css';
 
 const Header = () => {
@@ -24,7 +24,7 @@ const Header = () => {
         <div className="header-content">
           <Link to="/" className="logo">
             <FaPlay className="logo-icon" />
-            <span>MovieApp</span>
+            <span>Cine Search</span>
           </Link>
 
           <nav className="nav">
@@ -37,13 +37,22 @@ const Header = () => {
               <span>Trending</span>
             </Link>
             <Link to="/top-rated" className={`nav-link ${isActive('/top-rated') ? 'active' : ''}`}>
-              <FaStar />
+              <FaTrophy />
               <span>Top Rated</span>
             </Link>
             <Link to="/upcoming" className={`nav-link ${isActive('/upcoming') ? 'active' : ''}`}>
               <FaCalendar />
               <span>Upcoming</span>
             </Link>
+
+            <div className="nav-link dropdown" key="discover-dropdown">
+              <FaGlobe />
+              <span>Discover</span>
+              <div className="dropdown-content">
+                <Link to="/discover?type=language">By Language</Link>
+                <Link to="/discover?type=region">By Region</Link>
+              </div>
+            </div>
           </nav>
 
           <form className="search-form" onSubmit={handleSearch}>

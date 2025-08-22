@@ -5,7 +5,7 @@ const API_BASE_URL = 'https://api.themoviedb.org/3';
 
 // For development, you can use a demo key or get your own from TMDB
 // Visit: https://www.themoviedb.org/settings/api
-const API_KEY = process.env.REACT_APP_TMDB_API_KEY || '525f5fb302a2f66a4c3912d5ffa63018';
+const API_KEY = process.env.REACT_APP_TMDB_API_KEY || '9f9a757cb62eff6be8b4396f051a86be';
 
 // Create axios instance with base configuration
 const tmdbApi = axios.create({
@@ -52,6 +52,9 @@ export const tmdbEndpoints = {
   topRated: '/movie/top_rated',
   upcoming: '/movie/upcoming',
   nowPlaying: '/movie/now_playing',
+  discover: '/discover/movie',
+  languages: '/configuration/languages',
+  countries: '/configuration/countries',
 };
 
 // Helper function to get full image URL
@@ -165,6 +168,41 @@ export const tmdbService = {
       return response.data;
     } catch (error) {
       console.error('Error fetching now playing movies:', error);
+      throw error;
+    }
+  },
+
+  // Discover movies
+  discoverMovies: async (filters) => {
+    try {
+      const response = await tmdbApi.get(tmdbEndpoints.discover, {
+        params: filters,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error discovering movies:', error);
+      throw error;
+    }
+  },
+
+  // Get languages
+  getLanguages: async () => {
+    try {
+      const response = await tmdbApi.get(tmdbEndpoints.languages);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching languages:', error);
+      throw error;
+    }
+  },
+
+  // Get countries
+  getCountries: async () => {
+    try {
+      const response = await tmdbApi.get(tmdbEndpoints.countries);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching countries:', error);
       throw error;
     }
   },

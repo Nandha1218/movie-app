@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaStar, FaPlay, FaCalendar } from 'react-icons/fa';
+import { FaStar, FaPlay, FaCalendar, FaTrophy } from 'react-icons/fa';
 import tmdbService, { getPosterUrl } from '../services/tmdb';
 import MovieCard from './MovieCard';
 import { initScrollAnimations } from '../utils/animations';
@@ -115,7 +115,7 @@ const Home = () => {
             </h2>
             <Link to="/trending" className="view-all-btn">View All</Link>
           </div>
-                     <div className="movies-grid">
+           <div className="movies-grid">
              {trendingMovies.slice(1, 9).map((movie) => (
                <div key={movie.id} className="fade-in-on-scroll">
                  <MovieCard movie={movie} />
@@ -128,7 +128,7 @@ const Home = () => {
          <section className="movies-section fade-in-on-scroll">
            <div className="section-header">
              <h2 className="section-title">
-               <FaStar /> Top Rated Movies
+               <FaTrophy /> Top Rated Movies
              </h2>
              <Link to="/top-rated" className="view-all-btn btn-secondary">View All</Link>
            </div>
