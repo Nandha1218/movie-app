@@ -5,7 +5,7 @@ const API_BASE_URL = 'https://api.themoviedb.org/3';
 
 // For development, you can use a demo key or get your own from TMDB
 // Visit: https://www.themoviedb.org/settings/api
-const API_KEY = process.env.REACT_APP_TMDB_API_KEY || '525f5fb302a2f66a4c3912d5ffa63018';
+const API_KEY = process.env.REACT_APP_TMDB_API_KEY || '9f9a757cb62eff6be8b4396f051a86be';
 
 // Create axios instance with base configuration
 const tmdbApi = axios.create({
