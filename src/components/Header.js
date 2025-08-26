@@ -1,19 +1,65 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaSearch, FaHome, FaStar, FaCalendar, FaPlay, FaTrophy, FaGlobe } from 'react-icons/fa';
+import { FaSearch, FaHome, FaStar, FaCalendar, FaPlay, FaTrophy, FaFilter } from 'react-icons/fa';
 import './Header.css';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    language: '',
+    year: '',
+    industry: ''
+  });
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      const queryParams = new URLSearchParams();
+      queryParams.set('q', searchQuery.trim());
+      
+      // Add filters to search query if they exist
+      if (filters.language) queryParams.set('language', filters.language);
+      if (filters.year) queryParams.set('year', filters.year);
+      if (filters.industry) queryParams.set('industry', filters.industry);
+      
+      navigate(`/search?${queryParams.toString()}`);
       setSearchQuery('');
+      setShowFilters(false);
     }
+  };
+
+  const handleFilterSearch = () => {
+    // Search only by filters without requiring movie name
+    if (filters.language || filters.year || filters.industry) {
+      const queryParams = new URLSearchParams();
+      queryParams.set('q', 'all'); // Use 'all' as a placeholder for filter-only search
+      
+      // Add filters to search query
+      if (filters.language) queryParams.set('language', filters.language);
+      if (filters.year) queryParams.set('year', filters.year);
+      if (filters.industry) queryParams.set('industry', filters.industry);
+      
+      navigate(`/search?${queryParams.toString()}`);
+      setShowFilters(false);
+    }
+  };
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      language: '',
+      year: '',
+      industry: ''
+    });
   };
 
   const isActive = (path) => location.pathname === path;
@@ -45,14 +91,7 @@ const Header = () => {
               <span>Upcoming</span>
             </Link>
 
-            <div className="nav-link dropdown" key="discover-dropdown">
-              <FaGlobe />
-              <span>Discover</span>
-              <div className="dropdown-content">
-                <Link to="/discover?type=language">By Language</Link>
-                <Link to="/discover?type=region">By Region</Link>
-              </div>
-            </div>
+
           </nav>
 
           <form className="search-form" onSubmit={handleSearch}>
@@ -66,6 +105,89 @@ const Header = () => {
                 className="search-input"
               />
             </div>
+            
+            <div className="filter-container">
+              <button 
+                type="button" 
+                className="filter-btn"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <FaFilter />
+              </button>
+              
+              {showFilters && (
+                <div className="filter-dropdown">
+                  <div className="filter-group">
+                    <label>Language:</label>
+                    <select 
+                      value={filters.language} 
+                      onChange={(e) => handleFilterChange('language', e.target.value)}
+                    >
+                      <option value="">Any Language</option>
+                      <option value="en">English</option>
+                      <option value="es">Spanish</option>
+                      <option value="fr">French</option>
+                      <option value="de">German</option>
+                      <option value="it">Italian</option>
+                      <option value="pt">Portuguese</option>
+                      <option value="ru">Russian</option>
+                      <option value="ja">Japanese</option>
+                      <option value="ko">Korean</option>
+                      <option value="zh">Chinese</option>
+                      <option value="hi">Hindi</option>
+                      <option value="ta">Tamil</option>
+                    </select>
+                  </div>
+                  
+                  <div className="filter-group">
+                    <label>Year:</label>
+                    <select 
+                      value={filters.year} 
+                      onChange={(e) => handleFilterChange('year', e.target.value)}
+                    >
+                      <option value="">Any Year</option>
+                      {Array.from({ length: 25 }, (_, i) => {
+                        const year = new Date().getFullYear() - i;
+                        return <option key={year} value={year}>{year}</option>;
+                      })}
+                    </select>
+                  </div>
+                  
+                  <div className="filter-group">
+                    <label>Industry:</label>
+                    <select 
+                      value={filters.industry} 
+                      onChange={(e) => handleFilterChange('industry', e.target.value)}
+                    >
+                      <option value="">Any Industry</option>
+                      <option value="hollywood">Hollywood</option>
+                      <option value="bollywood">Bollywood</option>
+                      <option value="nollywood">Nollywood</option>
+                      <option value="korean">Korean Cinema</option>
+                      <option value="japanese">Japanese Cinema</option>
+                      <option value="chinese">Chinese Cinema</option>
+                      <option value="european">European Cinema</option>
+                      <option value="tamil">Tamil Cinema (Kollywood)</option>
+                    </select>
+                  </div>
+                  
+                                  <div className="filter-actions">
+                  <button 
+                    type="button" 
+                    onClick={handleFilterSearch} 
+                    className="filter-search-btn"
+                    disabled={!filters.language && !filters.year && !filters.industry}
+                  >
+                    <FaSearch /> Search by Filters
+                  </button>
+                  <button type="button" onClick={clearFilters} className="clear-filters-btn">
+                    Clear Filters
+                  </button>
+                </div>
+                </div>
+              )}
+            </div>
+            
             <button type="submit" className="search-btn">
               Search
             </button>

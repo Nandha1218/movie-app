@@ -88,11 +88,14 @@ export const tmdbService = {
   },
 
   // Search movies
-  searchMovies: async (query, page = 1) => {
+  searchMovies: async (query, page = 1, language = null) => {
     try {
-      const response = await tmdbApi.get(tmdbEndpoints.search, {
-        params: { query, page },
-      });
+      const params = { query, page };
+      if (language) {
+        params.language = language;
+      }
+      
+      const response = await tmdbApi.get(tmdbEndpoints.search, { params });
       return response.data;
     } catch (error) {
       console.error('Error searching movies:', error);

@@ -8,6 +8,9 @@ import './SearchResults.css';
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q');
+  const language = searchParams.get('language');
+  const year = searchParams.get('year');
+  const industry = searchParams.get('industry');
   
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -22,18 +25,132 @@ const SearchResults = () => {
       setCurrentPage(1);
       searchMovies(query, 1);
     }
-  }, [query]);
+  }, [query, language, year, industry]);
 
   const searchMovies = async (searchQuery, page = 1) => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await tmdbService.searchMovies(searchQuery, page);
+      let response;
+      let filteredMovies = [];
       
-      setMovies(response.results);
-      setTotalPages(response.total_pages);
-      setTotalResults(response.total_results);
+      // Check if this is a filter-only search (query === 'all')
+      if (searchQuery === 'all') {
+        // Search by filters only - use discover endpoint for better results
+        let discoverParams = {
+          page: page
+        };
+        
+        if (language) {
+          discoverParams.with_original_language = language;
+        }
+        
+        if (year) {
+          discoverParams.primary_release_year = parseInt(year);
+        }
+        
+        // Map industry to language if no language specified
+        if (industry && !language) {
+          let targetLanguage = null;
+          switch (industry) {
+            case 'tamil':
+              targetLanguage = 'ta';
+              break;
+            case 'bollywood':
+              targetLanguage = 'hi';
+              break;
+            case 'korean':
+              targetLanguage = 'ko';
+              break;
+            case 'japanese':
+              targetLanguage = 'ja';
+              break;
+            case 'chinese':
+              targetLanguage = 'zh';
+              break;
+            case 'hollywood':
+              targetLanguage = 'en';
+              break;
+            default:
+              targetLanguage = null;
+          }
+          
+          if (targetLanguage) {
+            discoverParams.with_original_language = targetLanguage;
+          }
+        }
+        
+        // Use discover endpoint for filter-only search
+        response = await tmdbService.discoverMovies(discoverParams);
+        filteredMovies = response.results;
+      } else {
+        // Regular search with movie name
+        response = await tmdbService.searchMovies(searchQuery, page, language);
+        filteredMovies = response.results;
+        
+        // Apply additional filters after search
+        if (year) {
+          const targetYear = parseInt(year);
+          filteredMovies = filteredMovies.filter(movie => {
+            if (movie.release_date) {
+              const movieYear = new Date(movie.release_date).getFullYear();
+              return movieYear === targetYear;
+            }
+            return false;
+          });
+        }
+        
+        // Apply industry filter
+        if (industry) {
+          let targetLanguage = null;
+          switch (industry) {
+            case 'tamil':
+              targetLanguage = 'ta';
+              break;
+            case 'bollywood':
+              targetLanguage = 'hi';
+              break;
+            case 'korean':
+              targetLanguage = 'ko';
+              break;
+            case 'japanese':
+              targetLanguage = 'ja';
+              break;
+            case 'chinese':
+              targetLanguage = 'zh';
+              break;
+            case 'hollywood':
+              targetLanguage = 'en';
+              break;
+            default:
+              targetLanguage = null;
+          }
+          
+          if (targetLanguage) {
+            filteredMovies = filteredMovies.filter(movie => 
+              movie.original_language === targetLanguage
+            );
+          }
+        }
+      }
+      
+             setMovies(filteredMovies);
+       
+       // Reset sort to relevance when new search results come in
+       setSortBy('relevance');
+       
+       // Calculate pagination based on filtered results
+       if (filteredMovies.length === 0) {
+         setTotalPages(0);
+         setTotalResults(0);
+       } else {
+         // For filtered results, we need to handle pagination differently
+         // Since TMDB doesn't support all our filters natively, we'll show all results on one page
+         setTotalPages(1);
+         setTotalResults(filteredMovies.length);
+       }
+      
     } catch (err) {
       console.error('Error searching movies:', err);
       setError('Failed to search movies. Please try again later.');
@@ -52,12 +169,41 @@ const SearchResults = () => {
 
   const handleSortChange = (newSortBy) => {
     setSortBy(newSortBy);
-    // In a real app, you would implement sorting logic here
-    // For now, we'll just re-fetch the current page
-    searchMovies(query, currentPage);
+    // Sort the current movies based on the selected criteria
+    sortMovies(newSortBy);
   };
 
-  if (!query) {
+  const sortMovies = (sortCriteria) => {
+    const sortedMovies = [...movies];
+    
+    switch (sortCriteria) {
+      case 'rating':
+        sortedMovies.sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
+        break;
+      case 'date':
+        sortedMovies.sort((a, b) => {
+          const dateA = a.release_date ? new Date(a.release_date) : new Date(0);
+          const dateB = b.release_date ? new Date(b.release_date) : new Date(0);
+          return dateB - dateA; // Newest first
+        });
+        break;
+      case 'title':
+        sortedMovies.sort((a, b) => {
+          const titleA = (a.title || '').toLowerCase();
+          const titleB = (b.title || '').toLowerCase();
+          return titleA.localeCompare(titleB);
+        });
+        break;
+      case 'relevance':
+      default:
+        // Keep original order (relevance from TMDB)
+        break;
+    }
+    
+    setMovies(sortedMovies);
+  };
+
+  if (!query || query === '') {
     return (
       <div className="container">
         <div className="no-search">
@@ -75,11 +221,33 @@ const SearchResults = () => {
       <div className="container">
         <div className="search-header">
           <h1 className="page-title">Search Results</h1>
-          <div className="search-info">
-            <p className="search-query">"{query}"</p>
-            <p className="results-count">
-              {totalResults > 0 ? `${totalResults} movies found` : 'No movies found'}
-            </p>
+                      <div className="search-info">
+              <p className="search-query">
+                {query === 'all' ? 'Filtered Movies' : `"${query}"`}
+              </p>
+              <p className="results-count">
+                {totalResults > 0 ? `${totalResults} movies found` : 'No movies found'}
+              </p>
+            {(language || year || industry) && (
+              <div className="active-filters">
+                <span className="filter-label">Active Filters:</span>
+                {language && (
+                  <span className="filter-tag">
+                    Language: {language === 'ta' ? 'Tamil' : language === 'hi' ? 'Hindi' : language === 'ko' ? 'Korean' : language === 'ja' ? 'Japanese' : language === 'zh' ? 'Chinese' : language.toUpperCase()}
+                  </span>
+                )}
+                {year && (
+                  <span className="filter-tag">
+                    Year: {year}
+                  </span>
+                )}
+                {industry && (
+                  <span className="filter-tag">
+                    Industry: {industry === 'tamil' ? 'Tamil Cinema' : industry === 'bollywood' ? 'Bollywood' : industry === 'korean' ? 'Korean Cinema' : industry === 'japanese' ? 'Japanese Cinema' : industry === 'chinese' ? 'Chinese Cinema' : industry.charAt(0).toUpperCase() + industry.slice(1)}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -93,11 +261,16 @@ const SearchResults = () => {
               onChange={(e) => handleSortChange(e.target.value)}
               className="sort-select"
             >
-              <option value="relevance">Relevance</option>
-              <option value="rating">Rating</option>
-              <option value="date">Release Date</option>
-              <option value="title">Title</option>
+              <option value="relevance">Relevance (Default)</option>
+              <option value="rating">Rating (High to Low)</option>
+              <option value="date">Release Date (Newest First)</option>
+              <option value="title">Title (A-Z)</option>
             </select>
+            {sortBy !== 'relevance' && (
+              <span className="sort-indicator">
+                Sorted by: {sortBy === 'rating' ? 'Rating' : sortBy === 'date' ? 'Release Date' : 'Title'}
+              </span>
+            )}
           </div>
         </div>
 
@@ -114,6 +287,20 @@ const SearchResults = () => {
         {/* Results */}
         {!loading && !error && movies.length > 0 && (
           <>
+            <div className="filtered-results-info">
+              <p className="filtered-count">
+                {query === 'all' 
+                  ? `Showing ${movies.length} movies based on your filters`
+                  : `Showing ${movies.length} filtered results for "${query}"`
+                }
+                {(language || year || industry) && query !== 'all' && (
+                  <span className="filter-applied">
+                    {' '}with applied filters
+                  </span>
+                )}
+              </p>
+            </div>
+            
             <div className="movies-grid">
               {movies.map((movie) => (
                 <MovieCard key={movie.id} movie={movie} />
