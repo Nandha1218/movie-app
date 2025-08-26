@@ -20,11 +20,7 @@ const Header = () => {
       const queryParams = new URLSearchParams();
       queryParams.set('q', searchQuery.trim());
       
-      // Add filters to search query if they exist
-      if (filters.language) queryParams.set('language', filters.language);
-      if (filters.year) queryParams.set('year', filters.year);
-      if (filters.industry) queryParams.set('industry', filters.industry);
-      
+      // Primary search only searches by movie name, not including filters
       navigate(`/search?${queryParams.toString()}`);
       setSearchQuery('');
       setShowFilters(false);

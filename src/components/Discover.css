@@ -2,6 +2,15 @@
   padding: 2rem 0;
 }
 
+/* Override container width for discover page */
+.discover .container {
+  max-width: none !important;
+  width: 100% !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .page-title {
   text-align: center;
   font-size: 2.5rem;
@@ -10,15 +19,184 @@
 }
 
 .discover-controls {
-  text-align: center;
-  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 2rem auto;
+  padding: 0.8rem;
+  background: rgba(28, 37, 38, 0.9);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 163, 224, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: 420px !important;
+  width: fit-content !important;
 }
 
-.discover-controls select {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 130px;
+  max-width: 130px;
+}
+
+.control-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(224, 224, 224, 0.9);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  text-align: center;
+}
+
+.control-select {
+  width: 130px;
+  max-width: 130px;
+  padding: 6px 10px;
+  border: 1px solid rgba(0, 163, 224, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23ffffff' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 8px;
+  padding-right: 26px;
+}
+
+.control-select:focus {
+  outline: none;
+  border-color: #00A3E0;
+  box-shadow: 0 0 10px rgba(0, 163, 224, 0.3);
+}
+
+.control-select option {
+  background: #1c2526 !important;
+  background-color: #1c2526 !important;
+  color: #FFFFFF !important;
+  padding: 8px 12px;
+}
+
+/* Additional browser-specific styling for better compatibility */
+.control-select optgroup {
+  background: #1c2526 !important;
+  color: #FFFFFF !important;
+}
+
+/* Webkit browsers specific styling */
+.control-select::-webkit-scrollbar {
+  width: 8px;
+}
+
+.control-select::-webkit-scrollbar-track {
+  background: #1c2526;
+}
+
+.control-select::-webkit-scrollbar-thumb {
+  background: rgba(0, 163, 224, 0.5);
+  border-radius: 4px;
+}
+
+/* Firefox specific styling */
+@-moz-document url-prefix() {
+  .control-select option {
+    background-color: #1c2526 !important;
+    color: #FFFFFF !important;
+  }
+}
+
+/* Additional forced styling for problematic browsers */
+.control-select option,
+.control-select option:checked,
+.control-select option:hover {
+  background: #1c2526 !important;
+  background-color: #1c2526 !important;
+  color: #FFFFFF !important;
+}
+
+/* Force override for system styles */
+select.control-select option {
+  background: #1c2526 !important;
+  color: #FFFFFF !important;
+}
+
+/* IE/Edge specific */
+.control-select::-ms-expand {
+  display: none;
+}
+
+/* Alternative background for better contrast */
+.control-select option[selected] {
+  background: rgba(0, 163, 224, 0.5) !important;
+  color: #FFFFFF !important;
+}
+
+/* Sort select styling - matching SearchResults component */
+.sort-select {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 0.5rem 0.6rem !important;
+  border-radius: 8px !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+  width: 130px !important;
+  max-width: 130px !important;
+  margin: 0 auto !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23ffffff' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 8px center !important;
+  background-size: 8px !important;
+  padding-right: 26px !important;
+}
+
+.sort-select:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.5), 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+.sort-select:hover {
+  background: linear-gradient(135deg, #7c8ff0 0%, #8a5bc7 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* Sort select option styling */
+.sort-select option {
+  background: #1c2526 !important;
+  background-color: #1c2526 !important;
+  color: #FFFFFF !important;
+  padding: 8px 12px !important;
+}
+
+.sort-select option:checked {
+  background: rgba(102, 126, 234, 0.8) !important;
+  color: #FFFFFF !important;
+}
+
+.sort-select option:hover {
+  background: rgba(102, 126, 234, 0.6) !important;
+  color: #FFFFFF !important;
 }
 
 .loading,

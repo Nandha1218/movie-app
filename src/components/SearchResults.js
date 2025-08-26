@@ -254,7 +254,9 @@ const SearchResults = () => {
         {/* Search Controls */}
         <div className="search-controls">
           <div className="sort-controls">
-            <label htmlFor="sort-select">Sort by:</label>
+            <label htmlFor="sort-select">
+              <FaSort /> Sort by:
+            </label>
             <select
               id="sort-select"
               value={sortBy}

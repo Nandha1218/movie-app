@@ -142,7 +142,7 @@ const Discover = () => {
               id="sort-select"
               value={sortBy} 
               onChange={(e) => setSortBy(e.target.value)}
-              className="control-select"
+              className="sort-select"
             >
               <option value="popularity.desc">Popularity (High to Low)</option>
               <option value="popularity.asc">Popularity (Low to High)</option>
